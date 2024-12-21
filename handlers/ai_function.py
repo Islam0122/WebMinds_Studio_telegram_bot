@@ -42,6 +42,7 @@ def get_access_token() -> str:
         return None
 
 
+
 def send_prompt(msg: str, access_token: str):
     url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
     payload = json.dumps({
