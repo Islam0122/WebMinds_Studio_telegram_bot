@@ -1,6 +1,8 @@
 from aiogram import F, types, Router, Bot
 from aiogram.enums import ParseMode, ChatMemberStatus
 from aiogram.filters import CommandStart, Command
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -37,10 +39,21 @@ async def start_main_menu(query: types.CallbackQuery, ):
         caption=welcome_text,
         reply_markup=start_functions_keyboard())
 
+
 @start_functions_private_router.callback_query(F.data == "start_")
 async def start_main_menu(query: types.CallbackQuery, ):
     """Обработчик callback_query для основного меню"""
     await query.message.delete()
+    await query.message.answer_photo(
+        photo=types.FSInputFile('media/img/img.png'),
+        caption=welcome_text,
+        reply_markup=start_functions_keyboard()
+    )
+
+
+@start_functions_private_router.callback_query(F.data == "return")
+async def return_main_menu(query: types.CallbackQuery, ):
+    """Обработчик callback_query для основного меню"""
     await query.message.answer_photo(
         photo=types.FSInputFile('media/img/img.png'),
         caption=welcome_text,
@@ -61,25 +74,6 @@ async def about_us_command_callback_query(query: types.CallbackQuery) -> None:
         "<b>🔍 SEO-оптимизация</b> — повышение видимости вашего сайта в поисковых системах.\n"
         "<b>⚙️ Индивидуальные решения</b> — разработка решений, которые идеально подходят под ваши задачи.\n"
         "<b>📈 Внедрение CRM-систем</b> — мы помогаем интегрировать CRM для оптимизации работы с клиентами и улучшения бизнес-процессов.\n"
-        "<b>Свяжитесь с нами, чтобы узнать больше! 📩</b>"
-    )
-
-    await query.message.edit_caption(
-        caption=caption_text,
-        reply_markup=keyboard_markup
-    )
-
-
-@start_functions_private_router.callback_query(F.data == 'our_services')
-async def our_services_callback_query(query: types.CallbackQuery) -> None:
-    keyboard_markup = return_functions_keyboard()
-    caption_text = (
-        "<b>Наши услуги:</b>\n\n"
-        "<b>🌐 Разработка сайтов</b> — создание современных и функциональных сайтов для вашего бизнеса.\n\n"
-        "<b>🤖 Создание Telegram-ботов</b> — разработка удобных и эффективных ботов для различных целей.\n\n"
-        "<b>🔍 SEO-оптимизация</b> — повышение видимости вашего сайта в поисковых системах.\n\n"
-        "<b>⚙️ Индивидуальные решения</b> — разработка решений, которые идеально подходят под ваши задачи.\n\n"
-        "<b>📈 Внедрение CRM-систем</b> — интеграция CRM для оптимизации работы с клиентами и улучшения бизнес-процессов.\n\n"
         "<b>Свяжитесь с нами, чтобы узнать больше! 📩</b>"
     )
 
@@ -244,3 +238,121 @@ async def contact_admin_callback_query(query: types.CallbackQuery, bot: Bot):
             f"1. Свяжитесь с пользователем для дальнейшего общения.\n"
         )
     )
+
+
+@start_functions_private_router.callback_query(F.data == 'useful_features')
+async def useful_features_callback_query(query: types.CallbackQuery) -> None:
+    keyboard_markup = useful_features_functions_keyboard()
+
+    caption_text = (
+        "<b>✨ Полезные функции от WebMinds Studio</b>\n\n"
+        "Откройте для себя уникальные возможности:\n\n"
+        "🎶 <b>Создание музыки с ИИ</b> — создайте уникальные треки.\n"
+        "📚 <b>Генерация сказок с ИИ</b> — волшебные истории для всех.\n"
+        "🤖 <b>Чат с ИИ</b> — общайтесь с умным ассистентом.\n\n"
+        "Наслаждайтесь инновациями с WebMinds Studio! 🚀"
+    )
+
+    # Отправка обновленного сообщения с кнопками
+    await query.message.edit_caption(
+        caption=caption_text,
+        reply_markup=keyboard_markup
+    )
+
+
+# Состояния для управления страницами
+class ServicePagesState(StatesGroup):
+    page = State()  # Страница текущей презентации
+
+
+# Стартовый обработчик для кнопки "Наши услуги"
+@start_functions_private_router.callback_query(F.data == 'our_services')
+async def our_services_callback_query(query: types.CallbackQuery, state: FSMContext) -> None:
+    # Устанавливаем состояние, чтобы отслеживать текущую страницу
+    await state.set_state(ServicePagesState.page)
+    # Начальная страница (первая страница)
+    page_number = 1
+    await send_service_page(query, page_number, state)
+
+
+# Отправка страницы с изображением и текстом
+async def send_service_page(query: types.CallbackQuery, page_number: int, state: FSMContext):
+    # Пример изображений и текста для каждой страницы
+    pages = [
+        {
+            "image": "media/our_service/1_img.png",  # Первая страница с изображением
+        },
+        {
+            "image": "media/our_service/2_img.png",  # Первая страница с изображением
+        },
+        {
+            "image": "media/our_service/3_img.png",  # Первая страница с изображением
+        },
+        {
+            "image": "media/our_service/4_img.png",  # Первая страница с изображением
+        },
+        {
+            "image": "media/our_service/5_img.png",  # Первая страница с изображением
+        },
+        {
+            "image": "media/our_service/6_img.png",  # Первая страница с изображением
+        },
+        {
+            "image": "media/our_service/7_img.png",  # Первая страница с изображением
+        },
+        {
+            "image": "media/our_service/8_img.png",  # Первая страница с изображением
+        },
+    ]
+
+    # Получаем данные для текущей страницы
+    page = pages[page_number - 1]
+
+    # Клавиатура с кнопками для навигации
+    keyboard_markup = InlineKeyboardBuilder()
+
+    if page_number > 1:
+        # Кнопка для перехода на предыдущую страницу со стрелкой
+        keyboard_markup.add(InlineKeyboardButton(text="⬅️", callback_data=f"prev_page_{page_number}"))
+
+    if page_number < len(pages):
+        # Кнопка для перехода на следующую страницу со стрелкой
+        keyboard_markup.add(InlineKeyboardButton(text="➡️", callback_data=f"next_page_{page_number}"))
+
+    keyboard_markup.add(InlineKeyboardButton(text="📅 Связаться с нами", callback_data="contact_us"))
+    keyboard_markup.add(InlineKeyboardButton(text="🔙 Вернуться в главное меню", callback_data="start_"))
+
+    # Фиксированное caption
+    caption_text = (
+        "<b>Наши услуги от WebMinds Studio</b>\n\n"
+        "Для получения дополнительной информации или чтобы связаться с нами, нажмите кнопку ниже."
+    )
+    await query.message.delete()
+    await query.message.answer_photo(
+        photo=types.FSInputFile(page["image"]),
+        caption=caption_text,
+        reply_markup=keyboard_markup.adjust(2,1).as_markup()
+
+    )
+
+
+
+# Обработчики для кнопок ">" и "<"
+@start_functions_private_router.callback_query(F.data.startswith("next_page_"))
+async def next_page_callback(query: types.CallbackQuery, state: FSMContext):
+    # Получаем текущую страницу из callback_data
+    current_page = int(query.data.split("_")[-1])
+    next_page = current_page + 1
+
+    # Отправляем следующую страницу
+    await send_service_page(query, next_page, state)
+
+
+@start_functions_private_router.callback_query(F.data.startswith("prev_page_"))
+async def prev_page_callback(query: types.CallbackQuery, state: FSMContext):
+    # Получаем текущую страницу из callback_data
+    current_page = int(query.data.split("_")[-1])
+    prev_page = current_page - 1
+
+    # Отправляем предыдущую страницу
+    await send_service_page(query, prev_page, state)
