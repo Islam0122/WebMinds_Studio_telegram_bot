@@ -6,6 +6,7 @@ from dotenv import find_dotenv, load_dotenv
 
 from handlers.group_panel.user_group_private import user_group_router
 from handlers.user_panel.chat_ai import ai_help_private_router
+from handlers.user_panel.create_music import create_music_private_router
 from handlers.user_panel.create_story import story_functions_private_router
 from handlers.user_panel.feedback_functions import feedback_private_router
 from handlers.user_panel.start_functions import start_functions_private_router
@@ -25,7 +26,7 @@ dp.include_router(start_functions_private_router)
 dp.include_router(story_functions_private_router)
 dp.include_router(ai_help_private_router)
 dp.include_router(feedback_private_router)
-
+dp.include_router(create_music_private_router)
 # dp.include_router(ai_help_private_router)
 dp.include_router(user_group_router)
 dp.include_router(unknown_private_router)
